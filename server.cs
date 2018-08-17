@@ -10,11 +10,14 @@ using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Network;
 
-// TODOs and NOtes gametime is given in raw military time eg: 600-1800
+// TODOs and NOtes 
+//gametime is given in raw military time eg: 600-1800
 // feed messages to in game warnings
 // lock out player controls?
 // Game1.freezeControls = true;  to freeze input?
-// search map change
+// make host invisible?
+// set up config file to handle length of festivals
+//deal with outliers like Grampa's Ghost or other random events that might break the server
 
 
 
