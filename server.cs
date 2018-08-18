@@ -52,6 +52,8 @@ namespace test
         private int jellyDanceCountDown;
         private bool grangeDisplayAvailable = false;
         private int grangeDisplayCountDown;
+        private bool goldenPumpkinAvailable = false;
+        private int goldenPumpkinCountDown;
         //private bool justSaved = true; //store if we just saved for sleep timing, not used saved for future jic
 
 
@@ -210,6 +212,24 @@ namespace test
                 }
             }
 
+            //golden pumpkin maze event
+            if (goldenPumpkinAvailable == true && Game1.CurrentEvent != null && Game1.CurrentEvent.isFestival)
+            {
+                goldenPumpkinCountDown += 1;
+
+                if (goldenPumpkinCountDown == 10) //remember set to 240 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                {
+                    Game1.player.team.SetLocalReady("festivalEnd", true);
+                    Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalEnd", true, (ConfirmationDialog.behavior)(who =>
+                    {
+                        Game1.exitActiveMenu();
+                        Game1.warpFarmer("Farmhouse", 9, 9, false);
+                        Game1.timeOfDay = 2400;
+                    }), (ConfirmationDialog.behavior)null);
+                     // destroys the HUD need to fix!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+              
+                }
+            }
         }
 
 
@@ -297,6 +317,11 @@ namespace test
                 else if (currentDate == stardewValleyFair && numPlayers >= 0) /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 {
                     StardewValleyFair();
+                }
+
+                else if (currentDate == spiritsEve && numPlayers >= 0) /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                {
+                    SpiritsEve();
                 }
 
                 else if (numPlayers >= 0)  /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -425,11 +450,35 @@ namespace test
                     else if (currentTime >= 1510)
                     {
                         GoToBed();
+                        Game1.displayHUD = true;
                         grangeDisplayAvailable = false;
                         grangeDisplayCountDown = 0;
                     }
                 }
 
+                void SpiritsEve()
+                {
+                    if (currentTime >= 2200 && currentTime <= 2350)
+                    {
+
+                        Game1.player.team.SetLocalReady("festivalStart", true);
+                        Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalStart", true, (ConfirmationDialog.behavior)(who =>
+                        {
+                            Game1.exitActiveMenu();
+                            Game1.warpFarmer("Town", 1, 20, 1);
+                        }), (ConfirmationDialog.behavior)null);
+
+                        goldenPumpkinAvailable = true;
+
+                    }
+                    else if (currentTime >= 2400)
+                    {
+                        GoToBed();
+                        Game1.displayHUD = true;
+                        goldenPumpkinAvailable = false;
+                        goldenPumpkinCountDown = 0;
+                    }
+                }
 
 
             }
