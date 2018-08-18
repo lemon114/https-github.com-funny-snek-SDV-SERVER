@@ -10,7 +10,7 @@ using StardewValley.Menus;
 using StardewValley.Network;
 
 // TODOs and NOtes 
-//gametime is given in raw military time eg: 600-1800
+
 // feed messages to in game warnings
 // lock out player controls?
 // Game1.freezeControls = true;  to freeze input?
@@ -21,7 +21,9 @@ using StardewValley.Network;
 // add little prompts to let player know whats happening to server guy?
 //config file for length of festivals.
 // find the actual values of the left click code for clicking on the cancel on sleep dialogue as a method for allowing sleep during the day of late night festivals. ie "cancel the sleep menu">"goto festival"
-
+// Game1.chatBox.activate();
+//Game1.chatBox.setText("Hello There");
+// Game1.CurrentEvent.forceEndFestival(Game1.player);  - force ends a festival with no dialogue for clients
 
 namespace test
 {
@@ -54,6 +56,10 @@ namespace test
         private int grangeDisplayCountDown;
         private bool goldenPumpkinAvailable = false;
         private int goldenPumpkinCountDown;
+        private bool iceFishingAvailable = false;
+        private int iceFishingCountDown;
+        private bool winterFeastAvailable = false;
+        private int winterFeastCountDown;
         //private bool justSaved = true; //store if we just saved for sleep timing, not used saved for future jic
 
 
@@ -239,12 +245,46 @@ namespace test
                     {
                         Game1.exitActiveMenu();
                         Game1.warpFarmer("Farmhouse", 9, 9, false);
-                        Game1.timeOfDay = 2400;
+                        Game1.timeOfDay = 2200;
                     }), (ConfirmationDialog.behavior)null);
-                     // destroys the HUD need to fix!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-              
                 }
             }
+
+            //ice fishing event
+            if (iceFishingAvailable == true && Game1.CurrentEvent != null && Game1.CurrentEvent.isFestival)
+            {
+                iceFishingCountDown += 1;
+
+                if (iceFishingCountDown == 10)  //4 minutes to enjoy fetival before egghunt starts - need to make config file.
+                {
+                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger eggHunt Scene, 
+                }
+                if (iceFishingCountDown >= 14) //have to adjust this value with config file as well.
+                {
+                    if (Game1.activeClickableMenu != null)
+                    {
+                        this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true);
+                    }
+                }
+            }
+
+            //Feast of the Winter event
+            if (winterFeastAvailable == true && Game1.CurrentEvent != null && Game1.CurrentEvent.isFestival)
+            {
+                winterFeastCountDown += 1;
+
+                if (winterFeastCountDown == 10) //remember set to 240 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                {
+                    Game1.player.team.SetLocalReady("festivalEnd", true);
+                    Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalEnd", true, (ConfirmationDialog.behavior)(who =>
+                    {
+                        Game1.exitActiveMenu();
+                        Game1.warpFarmer("Farmhouse", 9, 9, false);
+                        Game1.timeOfDay = 2200;
+                    }), (ConfirmationDialog.behavior)null);
+                }
+            }
+
         }
 
 
@@ -337,6 +377,16 @@ namespace test
                 else if (currentDate == spiritsEve && numPlayers >= 0) /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 {
                     SpiritsEve();
+                }
+
+                else if (currentDate == festivalOfIce && numPlayers >= 0) /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                {
+                    FestivalOfIce();
+                }
+
+                else if (currentDate == feastOfWinterStar && numPlayers >= 0) /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                {
+                    FeastOfWinterStar();
                 }
 
                 else if (numPlayers >= 0)  /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -495,6 +545,51 @@ namespace test
                     }
                 }
 
+                void FestivalOfIce()
+                {
+                    if (currentTime >= 900 && currentTime <= 1400)
+                    {
+
+                        Game1.player.team.SetLocalReady("festivalStart", true);
+                        Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalStart", true, (ConfirmationDialog.behavior)(who =>
+                        {
+                            Game1.exitActiveMenu();
+                            Game1.warpFarmer("Forest", 1, 20, 1);
+                        }), (ConfirmationDialog.behavior)null);
+
+                        iceFishingAvailable = true;
+
+                    }
+                    else if (currentTime >= 1410)
+                    {
+                        GoToBed();
+                        iceFishingAvailable = false;
+                        iceFishingCountDown = 0;
+                    }
+                }
+
+                void FeastOfWinterStar()
+                {
+                    if (currentTime >= 900 && currentTime <= 1400)
+                    {
+
+                        Game1.player.team.SetLocalReady("festivalStart", true);
+                        Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalStart", true, (ConfirmationDialog.behavior)(who =>
+                        {
+                            Game1.exitActiveMenu();
+                            Game1.warpFarmer("Town", 1, 20, 1);
+                        }), (ConfirmationDialog.behavior)null);
+
+                        winterFeastAvailable = true;
+
+                    }
+                    else if (currentTime >= 1410)
+                    {
+                        GoToBed();
+                        winterFeastAvailable = false;
+                        winterFeastCountDown = 0;
+                    }
+                }
 
             }
 
