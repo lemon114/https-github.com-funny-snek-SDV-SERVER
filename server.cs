@@ -20,6 +20,7 @@ using StardewValley.Network;
 // test no players going to festival doesn't break server
 // add little prompts to let player know whats happening to server guy?
 //config file for length of festivals.
+// find the actual values of the left click code for clicking on the cancel on sleep dialogue as a method for allowing sleep during the day of late night festivals. ie "cancel the sleep menu">"goto festival"
 
 
 namespace test
@@ -49,6 +50,8 @@ namespace test
         private int luauSoupCountDown;
         private bool jellyDanceAvailable = false;
         private int jellyDanceCountDown;
+        private bool grangeDisplayAvailable = false;
+        private int grangeDisplayCountDown;
         //private bool justSaved = true; //store if we just saved for sleep timing, not used saved for future jic
 
 
@@ -136,8 +139,9 @@ namespace test
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger eggHunt Scene, 
                 }
                 if (eggHuntCountDown >= 254) //have to adjust this value with config file as well.
-
+                {
                     this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true); // just clicks left on repeat to go through menus
+                }
             }
 
             //flowerDance event
@@ -149,9 +153,10 @@ namespace test
                 {
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
                 }
-                if (flowerDanceCountDown >= 254) 
-
+                if (flowerDanceCountDown >= 254)
+                {
                     this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true); // just clicks left on repeat to go through menus
+                }
             }
 
             //luauSoup event
@@ -164,8 +169,9 @@ namespace test
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
                 }
                 if (luauSoupCountDown >= 24) //remember set to 254 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+                {
                     this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true); // just clicks left on repeat to go through menus
+                }
             }
 
             //Dance of the Moonlight Jellies event
@@ -178,8 +184,30 @@ namespace test
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
                 }
                 if (jellyDanceCountDown >= 24) //remember set to 254 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+                {
                     this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true); // just clicks left on repeat to go through menus
+                }
+            }
+
+            //Grange Display event
+            if (grangeDisplayAvailable == true && Game1.CurrentEvent != null && Game1.CurrentEvent.isFestival)
+            {
+                grangeDisplayCountDown += 1;
+
+                if (grangeDisplayCountDown == 10)  //remember set back to 240 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                {
+                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
+                }
+                if (grangeDisplayCountDown == 15) //remember set to 245 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                {
+                    Game1.player.team.SetLocalReady("festivalEnd", true);
+                    Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalEnd", true, (ConfirmationDialog.behavior)(who =>
+                    {
+                        Game1.exitActiveMenu();
+                        Game1.warpFarmer("Farmhouse", 9, 9, false);
+                        Game1.timeOfDay = 2200;
+                    }), (ConfirmationDialog.behavior)null);
+                }
             }
 
         }
@@ -266,6 +294,11 @@ namespace test
                     DanceOfTheMoonlightJellies();
                 }
 
+                else if (currentDate == stardewValleyFair && numPlayers >= 0) /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                {
+                    StardewValleyFair();
+                }
+
                 else if (numPlayers >= 0)  /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 {
                     GoToBed();
@@ -295,6 +328,7 @@ namespace test
                     {
                         GoToBed();
                         eggHuntAvailable = false;
+                        eggHuntCountDown = 0;
                     }
                 }
 
@@ -317,6 +351,7 @@ namespace test
                     {
                         GoToBed();
                         flowerDanceAvailable = false;
+                        flowerDanceCountDown = 0;
                     }
                 }
 
@@ -339,6 +374,7 @@ namespace test
                     {
                         GoToBed();
                         luauSoupAvailable = false;
+                        luauSoupCountDown = 0;
                     }
                 }
 
@@ -367,9 +403,32 @@ namespace test
                     {
                         GoToBed();
                         jellyDanceAvailable = false;
+                        jellyDanceCountDown = 0;
                     }
                 }
 
+                void StardewValleyFair()
+                {
+                    if (currentTime >= 900 && currentTime <= 1500)
+                    {
+                        
+                        Game1.player.team.SetLocalReady("festivalStart", true);
+                        Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalStart", true, (ConfirmationDialog.behavior)(who =>
+                        {
+                            Game1.exitActiveMenu();
+                            Game1.warpFarmer("Town", 1, 20, 1);
+                        }), (ConfirmationDialog.behavior)null);
+
+                        grangeDisplayAvailable = true;
+
+                    }
+                    else if (currentTime >= 1510)
+                    {
+                        GoToBed();
+                        grangeDisplayAvailable = false;
+                        grangeDisplayCountDown = 0;
+                    }
+                }
 
 
 
