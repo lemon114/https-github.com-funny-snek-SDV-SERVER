@@ -105,11 +105,14 @@ namespace test
                 return;
             }
 
-            //left click menu spammer to get through random events happening, Grampa, Community center, house guests, etc. will spam error codes to SMAPI Turn on before official release!!!!!!!!!!!!!!!!!!!!!!!
-            /*if (IsEnabled == true) // server toggle
+            //left click menu spammer to get through random events happening
+            if (IsEnabled == true) // server toggle
             {
-                this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true);
-            }*/
+                if (Game1.activeClickableMenu != null)
+                {
+                    this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true);
+                }
+            }
 
             //NoClientsPause();  /// REMEMBER TO TURN BACK ON AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -142,7 +145,10 @@ namespace test
                 }
                 if (eggHuntCountDown >= 254) //have to adjust this value with config file as well.
                 {
-                    this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true); // just clicks left on repeat to go through menus
+                    if (Game1.activeClickableMenu != null)
+                    {
+                        this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true);
+                    }
                 }
             }
 
@@ -157,7 +163,10 @@ namespace test
                 }
                 if (flowerDanceCountDown >= 254)
                 {
-                    this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true); // just clicks left on repeat to go through menus
+                    if (Game1.activeClickableMenu != null)
+                    {
+                        this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true);
+                    }
                 }
             }
 
@@ -172,7 +181,10 @@ namespace test
                 }
                 if (luauSoupCountDown >= 24) //remember set to 254 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 {
-                    this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true); // just clicks left on repeat to go through menus
+                    if (Game1.activeClickableMenu != null)
+                    {
+                        this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true);
+                    }
                 }
             }
 
@@ -187,7 +199,10 @@ namespace test
                 }
                 if (jellyDanceCountDown >= 24) //remember set to 254 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 {
-                    this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true); // just clicks left on repeat to go through menus
+                    if (Game1.activeClickableMenu != null)
+                    {
+                        this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true);
+                    }
                 }
             }
 
@@ -488,6 +503,7 @@ namespace test
 
         private void GoToBed()
         {
+            Game1.displayHUD = true;
             Game1.warpFarmer("Farmhouse", 9, 9, false);
             this.Helper.Reflection.GetMethod(Game1.currentLocation, "startSleep").Invoke();
 
@@ -500,10 +516,14 @@ namespace test
         {
             if (IsEnabled == false) // server toggle
                 return;
-
-            this.Monitor.Log("This is the Shipping Menu");
-            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
+            if (Game1.activeClickableMenu != null)
+            {
+                this.Monitor.Log("This is the Shipping Menu");
+                this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
+            }
         }
 
     }
 }
+
+
