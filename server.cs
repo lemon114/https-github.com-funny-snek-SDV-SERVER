@@ -11,19 +11,18 @@ using StardewValley.Network;
 
 // TODOs and NOtes 
 
-// feed messages to in game warnings
+// setup GUI
 // lock out player controls?
 // Game1.freezeControls = true;  to freeze input?
 // make host invisible?
 // set up config file to handle length of festivals
-//deal with outliers like Grampa's Ghost or other random events that might break the server
-// test no players going to festival doesn't break server
-// add little prompts to let player know whats happening to server guy?
-//config file for length of festivals.
+// add little prompts to let players know whats happening to server guy?
+// config file for length of festivals.
 // find the actual values of the left click code for clicking on the cancel on sleep dialogue as a method for allowing sleep during the day of late night festivals. ie "cancel the sleep menu">"goto festival"
 // Game1.chatBox.activate();
-//Game1.chatBox.setText("Hello There");
-// Game1.CurrentEvent.forceEndFestival(Game1.player);  - force ends a festival with no dialogue for clients
+// Game1.chatBox.setText("Hello There");
+// need third line to actually send messages what could it be?
+
 
 namespace test
 {
@@ -60,7 +59,7 @@ namespace test
         private int iceFishingCountDown;
         private bool winterFeastAvailable = false;
         private int winterFeastCountDown;
-        //private bool justSaved = true; //store if we just saved for sleep timing, not used saved for future jic
+
 
 
 
@@ -74,7 +73,6 @@ namespace test
             helper.ConsoleCommands.Add("server", "Toggles headless server on/off", this.ServerToggle);
 
             SaveEvents.BeforeSave += this.Shipping_Menu; // Shipping Menu handler
-            // SaveEvents.AfterSave += this.AfterSave; // not used for now
             GameEvents.OneSecondTick += this.GameEvents_OneSecondTick; //game tick event handler
             TimeEvents.TimeOfDayChanged += this.TimeEvents_TimeOfDayChanged; // Time of day change handler
 
@@ -111,6 +109,8 @@ namespace test
                 return;
             }
 
+            NoClientsPause();
+
             //left click menu spammer to get through random events happening
             if (IsEnabled == true) // server toggle
             {
@@ -120,7 +120,7 @@ namespace test
                 }
             }
 
-            //NoClientsPause();  /// REMEMBER TO TURN BACK ON AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            
 
             //disable friendship decay
             if (IsEnabled == true) // server toggle
@@ -149,7 +149,7 @@ namespace test
                 {
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger eggHunt Scene, 
                 }
-                if (eggHuntCountDown >= 254) //have to adjust this value with config file as well.
+                if (eggHuntCountDown >= 245) //have to adjust this value with config file as well.
                 {
                     if (Game1.activeClickableMenu != null)
                     {
@@ -167,7 +167,7 @@ namespace test
                 {
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
                 }
-                if (flowerDanceCountDown >= 254)
+                if (flowerDanceCountDown >= 245)
                 {
                     if (Game1.activeClickableMenu != null)
                     {
@@ -181,11 +181,11 @@ namespace test
             {
                 luauSoupCountDown += 1;
 
-                if (luauSoupCountDown == 10)  //remember set back to 240 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if (luauSoupCountDown == 240)  
                 {
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
                 }
-                if (luauSoupCountDown >= 24) //remember set to 254 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if (luauSoupCountDown >= 245) 
                 {
                     if (Game1.activeClickableMenu != null)
                     {
@@ -199,11 +199,11 @@ namespace test
             {
                 jellyDanceCountDown += 1;
 
-                if (jellyDanceCountDown == 10)  //remember set back to 240 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if (jellyDanceCountDown == 240)  
                 {
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
                 }
-                if (jellyDanceCountDown >= 24) //remember set to 254 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if (jellyDanceCountDown >= 245) 
                 {
                     if (Game1.activeClickableMenu != null)
                     {
@@ -217,11 +217,11 @@ namespace test
             {
                 grangeDisplayCountDown += 1;
 
-                if (grangeDisplayCountDown == 10)  //remember set back to 240 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if (grangeDisplayCountDown == 240)  
                 {
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
                 }
-                if (grangeDisplayCountDown == 15) //remember set to 245 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if (grangeDisplayCountDown == 245) 
                 {
                     Game1.player.team.SetLocalReady("festivalEnd", true);
                     Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalEnd", true, (ConfirmationDialog.behavior)(who =>
@@ -238,7 +238,7 @@ namespace test
             {
                 goldenPumpkinCountDown += 1;
 
-                if (goldenPumpkinCountDown == 10) //remember set to 240 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if (goldenPumpkinCountDown == 10) 
                 {
                     Game1.player.team.SetLocalReady("festivalEnd", true);
                     Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalEnd", true, (ConfirmationDialog.behavior)(who =>
@@ -255,12 +255,12 @@ namespace test
             {
                 iceFishingCountDown += 1;
 
-                if (iceFishingCountDown == 10)  //4 minutes to enjoy fetival before egghunt starts - need to make config file.
+                if (iceFishingCountDown == 240)  //4 minutes to enjoy fetival before egghunt starts - need to make config file.
                 {
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger eggHunt Scene, 
                 }
-                if (iceFishingCountDown >= 14) //have to adjust this value with config file as well.
-                {
+                if (iceFishingCountDown >= 245)
+                { 
                     if (Game1.activeClickableMenu != null)
                     {
                         this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true);
@@ -273,7 +273,7 @@ namespace test
             {
                 winterFeastCountDown += 1;
 
-                if (winterFeastCountDown == 10) //remember set to 240 after test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if (winterFeastCountDown == 10)
                 {
                     Game1.player.team.SetLocalReady("festivalEnd", true);
                     Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalEnd", true, (ConfirmationDialog.behavior)(who =>
@@ -316,12 +316,6 @@ namespace test
             }
         }
 
-        /*private void AfterSave(object sender, EventArgs e)   //not used, saved for future reference in case I need it
-        {
-            justSaved = true;
-        }*/
-
-
 
 
         // auto-sleep and Holiday code
@@ -349,47 +343,47 @@ namespace test
 
 
 
-                if (currentDate == eggFestival && numPlayers >= 0) /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if (currentDate == eggFestival && numPlayers >= 1) 
                 {
                     EggFestival();
                 }
 
-                else if (currentDate == flowerDance && numPlayers >= 0) /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                else if (currentDate == flowerDance && numPlayers >= 1) 
                 {
                     FlowerDance();
                 }
 
-                else if (currentDate == luau && numPlayers >= 0) /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                else if (currentDate == luau && numPlayers >= 1) 
                 {
                     Luau();
                 }
 
-                else if (currentDate == danceOfJellies && numPlayers >= 0) /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                else if (currentDate == danceOfJellies && numPlayers >= 1) 
                 {
                     DanceOfTheMoonlightJellies();
                 }
 
-                else if (currentDate == stardewValleyFair && numPlayers >= 0) /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                else if (currentDate == stardewValleyFair && numPlayers >= 1) 
                 {
                     StardewValleyFair();
                 }
 
-                else if (currentDate == spiritsEve && numPlayers >= 0) /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                else if (currentDate == spiritsEve && numPlayers >= 1) 
                 {
                     SpiritsEve();
                 }
 
-                else if (currentDate == festivalOfIce && numPlayers >= 0) /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                else if (currentDate == festivalOfIce && numPlayers >= 1) 
                 {
                     FestivalOfIce();
                 }
 
-                else if (currentDate == feastOfWinterStar && numPlayers >= 0) /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                else if (currentDate == feastOfWinterStar && numPlayers >= 1) 
                 {
                     FeastOfWinterStar();
                 }
 
-                else if (numPlayers >= 0)  /// REMEMBER TO CHANGE BACK TO ONE AFTER TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                else if (numPlayers >= 1)  
                 {
                     GoToBed();
                 }
@@ -523,6 +517,11 @@ namespace test
 
                 void SpiritsEve()
                 {
+                    /*if (currentTime < 2200)  //triggers weird bug if you try to go to sleep then jump to a festival. Maybe try to fix in future?
+                        {
+                            GoToBed();
+                        }*/
+
                     if (currentTime >= 2200 && currentTime <= 2350)
                     {
 
@@ -620,5 +619,4 @@ namespace test
 
     }
 }
-
 
