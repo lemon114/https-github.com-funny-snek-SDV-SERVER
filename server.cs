@@ -11,29 +11,35 @@ using StardewValley.Network;
 
 // TODOs and NOtes 
 
-// setup GUI
-// lock out player controls?
-// Game1.freezeControls = true;  to freeze input?
-// make host invisible?
-// set up config file to handle length of festivals
-// add little prompts to let players know whats happening to server guy?
-// config file for length of festivals.
-// find the actual values of the left click code for clicking on the cancel on sleep dialogue as a method for allowing sleep during the day of late night festivals. ie "cancel the sleep menu">"goto festival"
-// Game1.chatBox.activate();
-// Game1.chatBox.setText("Hello There");
-// need third line to actually send messages what could it be?
+// setup GUI simple additional prompt when you get in bed
+
+//add pause banner that says SERVER MODE! maybe serach for freezeControls command to find teh pause banner
 
 
-namespace Always_On_Server
+namespace test
 {
+    class ModConfig
+    {
+        public int eggHuntCountDownConfig { get; set; } = 240;
+        public int flowerDanceCountDownConfig { get; set; } = 240;
+        public int luauSoupCountDownConfig { get; set; } = 240;
+        public int jellyDanceCountDownConfig { get; set; } = 240;
+        public int grangeDisplayCountDownConfig { get; set; } = 240;
+        public int goldenPumpkinCountDownConfig { get; set; } = 240;
+        public int iceFishingCountDownConfig { get; set; } = 240;
+        public int winterFeastCountDownConfig { get; set; } = 240;
+    }
+
+
+
+
 
 
     public class ModEntry : Mod
     {
-
-
-
-
+        /// <summary>The mod configuration from the player.</summary>
+        private ModConfig Config;
+        
 
 
 
@@ -69,6 +75,11 @@ namespace Always_On_Server
 
         public override void Entry(IModHelper helper)
         {
+            this.Config = this.Helper.ReadConfig<ModConfig>();
+            
+
+
+
 
             helper.ConsoleCommands.Add("server", "Toggles headless server on/off", this.ServerToggle);
 
@@ -80,18 +91,30 @@ namespace Always_On_Server
 
         }
 
-        private void ServerToggle(string command, string[] args)          // toggles server on/off
+        // toggles server on/off
+        private void ServerToggle(string command, string[] args)          
         {
             if (IsEnabled == false)
             {
                 IsEnabled = true;
                 this.Monitor.Log("The server is running!", LogLevel.Info);
+                Game1.chatBox.activate();
+                Game1.chatBox.setText("I am AFK in Server Mode.");
+                Game1.chatBox.chatBox.RecieveCommandInput('\r');
 
+               Game1.displayHUD = true;
+               Game1.addHUDMessage(new HUDMessage("Server Mode Activated!", ""));
+
+               Game1.options.pauseWhenOutOfFocus = false;
             }
             else if (IsEnabled == true)
             {
                 IsEnabled = false;
                 this.Monitor.Log("The server is turned off!", LogLevel.Info);
+                Game1.chatBox.activate();
+                Game1.chatBox.setText("I have returned from being a Headless Server!");
+                Game1.chatBox.chatBox.RecieveCommandInput('\r');
+
             }
         }
 
@@ -109,7 +132,7 @@ namespace Always_On_Server
                 return;
             }
 
-            NoClientsPause();
+            //NoClientsPause();  //Turn back on when done testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             //left click menu spammer to get through random events happening
             if (IsEnabled == true) // server toggle
@@ -144,12 +167,20 @@ namespace Always_On_Server
             if (eggHuntAvailable == true && Game1.CurrentEvent != null && Game1.CurrentEvent.isFestival)
             {
                 eggHuntCountDown += 1;
+           
+                float chatEgg = this.Config.eggHuntCountDownConfig / 60f;                    
+                if (eggHuntCountDown == 1)
+                {
+                    Game1.chatBox.activate();
+                    Game1.chatBox.setText($"The Egg Hunt will begin in {chatEgg:0.#} minutes.");
+                    Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                }
 
-                if (eggHuntCountDown == 240)  //4 minutes to enjoy fetival before egghunt starts - need to make config file.
+                if (eggHuntCountDown == this.Config.eggHuntCountDownConfig+1)  
                 {
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger eggHunt Scene, 
                 }
-                if (eggHuntCountDown >= 245) //have to adjust this value with config file as well.
+                if (eggHuntCountDown >= this.Config.eggHuntCountDownConfig+5) 
                 {
                     if (Game1.activeClickableMenu != null)
                     {
@@ -163,11 +194,19 @@ namespace Always_On_Server
             {
                 flowerDanceCountDown += 1;
 
-                if (flowerDanceCountDown == 240)  
+                float chatFlower = this.Config.flowerDanceCountDownConfig / 60f;
+                if (flowerDanceCountDown == 1)
+                {
+                    Game1.chatBox.activate();
+                    Game1.chatBox.setText($"The Flower Dance will begin in {chatFlower:0.#} minutes.");
+                    Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                }
+
+                if (flowerDanceCountDown == this.Config.flowerDanceCountDownConfig+1)  
                 {
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
                 }
-                if (flowerDanceCountDown >= 245)
+                if (flowerDanceCountDown >= this.Config.flowerDanceCountDownConfig+5)
                 {
                     if (Game1.activeClickableMenu != null)
                     {
@@ -179,13 +218,22 @@ namespace Always_On_Server
             //luauSoup event
             if (luauSoupAvailable == true && Game1.CurrentEvent != null && Game1.CurrentEvent.isFestival)
             {
+
                 luauSoupCountDown += 1;
 
-                if (luauSoupCountDown == 240)  
+                float chatSoup = this.Config.luauSoupCountDownConfig / 60f;
+                if (luauSoupCountDown == 1)
+                {
+                    Game1.chatBox.activate();
+                    Game1.chatBox.setText($"The Soup Tasting will begin in {chatSoup:0.#} minutes.");
+                    Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                }
+
+                if (luauSoupCountDown == this.Config.luauSoupCountDownConfig+1)  
                 {
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
                 }
-                if (luauSoupCountDown >= 245) 
+                if (luauSoupCountDown >= this.Config.luauSoupCountDownConfig+5) 
                 {
                     if (Game1.activeClickableMenu != null)
                     {
@@ -197,13 +245,22 @@ namespace Always_On_Server
             //Dance of the Moonlight Jellies event
             if (jellyDanceAvailable == true && Game1.CurrentEvent != null && Game1.CurrentEvent.isFestival)
             {
+
                 jellyDanceCountDown += 1;
 
-                if (jellyDanceCountDown == 240)  
+                float chatJelly = this.Config.jellyDanceCountDownConfig / 60f;
+                if (jellyDanceCountDown == 1)
+                {
+                    Game1.chatBox.activate();
+                    Game1.chatBox.setText($"The Dance of the Moonlight Jellies will begin in {chatJelly:0.#} minutes.");
+                    Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                }
+
+                if (jellyDanceCountDown == this.Config.jellyDanceCountDownConfig+1)  
                 {
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
                 }
-                if (jellyDanceCountDown >= 245) 
+                if (jellyDanceCountDown >= this.Config.jellyDanceCountDownConfig+5) 
                 {
                     if (Game1.activeClickableMenu != null)
                     {
@@ -215,13 +272,22 @@ namespace Always_On_Server
             //Grange Display event
             if (grangeDisplayAvailable == true && Game1.CurrentEvent != null && Game1.CurrentEvent.isFestival)
             {
+
                 grangeDisplayCountDown += 1;
 
-                if (grangeDisplayCountDown == 240)  
+                float chatGrange = this.Config.grangeDisplayCountDownConfig / 60f;
+                if (grangeDisplayCountDown == 1)
+                {
+                    Game1.chatBox.activate();
+                    Game1.chatBox.setText($"The Grange Judging will begin in {chatGrange:0.#} minutes.");
+                    Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                }
+
+                if (grangeDisplayCountDown == this.Config.grangeDisplayCountDownConfig+1)  
                 {
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
                 }
-                if (grangeDisplayCountDown == 245) 
+                if (grangeDisplayCountDown == this.Config.grangeDisplayCountDownConfig+5) 
                 {
                     Game1.player.team.SetLocalReady("festivalEnd", true);
                     Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalEnd", true, (ConfirmationDialog.behavior)(who =>
@@ -255,11 +321,19 @@ namespace Always_On_Server
             {
                 iceFishingCountDown += 1;
 
-                if (iceFishingCountDown == 240)  //4 minutes to enjoy fetival before egghunt starts - need to make config file.
+                float chatIceFish = this.Config.iceFishingCountDownConfig / 60f;
+                if (iceFishingCountDown == 1)
+                {
+                    Game1.chatBox.activate();
+                    Game1.chatBox.setText($"The Ice Fishing Contest will begin in {chatIceFish:0.#} minutes.");
+                    Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                }
+
+                if (iceFishingCountDown == this.Config.iceFishingCountDownConfig+1)  
                 {
                     this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger eggHunt Scene, 
                 }
-                if (iceFishingCountDown >= 245)
+                if (iceFishingCountDown >= this.Config.iceFishingCountDownConfig+5)
                 { 
                     if (Game1.activeClickableMenu != null)
                     {
@@ -328,7 +402,7 @@ namespace Always_On_Server
             gameClockTicks += 1;
 
 
-            if (gameClockTicks >= 2)
+            if (gameClockTicks >= 3)
             {
                 var currentTime = Game1.timeOfDay;
                 var currentDate = SDate.Now();
@@ -345,45 +419,118 @@ namespace Always_On_Server
 
                 if (currentDate == eggFestival && numPlayers >= 1) 
                 {
+                    if (eggHuntAvailable == false)
+                    {
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("Egg Festival Today!");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("I will not be in bed until after 2:00 P.M.");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                    }
+
                     EggFestival();
                 }
 
                 else if (currentDate == flowerDance && numPlayers >= 1) 
                 {
+                    if (flowerDanceAvailable == false)
+                    {
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("Flower Dance Today!");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("I will not be in bed until after 2:00 P.M.");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                    }
                     FlowerDance();
                 }
 
                 else if (currentDate == luau && numPlayers >= 1) 
                 {
+                    if (luauSoupAvailable == false)
+                    {
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("Luau Today!");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("Luau Today! I will not be in bed until after 2:00 P.M.");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                    }
                     Luau();
                 }
 
                 else if (currentDate == danceOfJellies && numPlayers >= 1) 
                 {
+                    if (jellyDanceAvailable == false)
+                    {
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("Dance of the Moonlight Jellies Tonight!");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("I will not be in bed until after 12:00 A.M.");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                    }
                     DanceOfTheMoonlightJellies();
                 }
 
                 else if (currentDate == stardewValleyFair && numPlayers >= 1) 
                 {
+                    if (grangeDisplayAvailable == false)
+                    {
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("Stardew Valley Fair Today!");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("I will not be in bed until after 3:00 P.M.");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                    }
                     StardewValleyFair();
                 }
 
                 else if (currentDate == spiritsEve && numPlayers >= 1) 
                 {
+                    if (goldenPumpkinAvailable == false)
+                    {
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("Spirit's Eve Tonight!");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("I will not be in bed until after 12:00 A.M.");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                    }
                     SpiritsEve();
                 }
 
                 else if (currentDate == festivalOfIce && numPlayers >= 1) 
                 {
+                    if (iceFishingAvailable == false)
+                    {
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("Festival of Ice Today!");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("I will not be in bed until after 2:00 P.M.");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                    }
                     FestivalOfIce();
                 }
 
                 else if (currentDate == feastOfWinterStar && numPlayers >= 1) 
                 {
+                    if (winterFeastAvailable == false)
+                    {
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("Feast of the Winter Star Today!");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("I will not be in bed until after 2:00 P.M.");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                    }
                     FeastOfWinterStar();
                 }
 
-                else if (numPlayers >= 1)  
+                else if (numPlayers >= 0)  //turn back to 1 after testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 {
                     GoToBed();
                 }
@@ -397,6 +544,9 @@ namespace Always_On_Server
                 {
                     if (currentTime >= 900 && currentTime <= 1400)
                     {
+                        
+
+
                         //teleports to egg festival
                         Game1.player.team.SetLocalReady("festivalStart", true);
                         Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalStart", true, (ConfirmationDialog.behavior)(who =>
@@ -441,6 +591,7 @@ namespace Always_On_Server
 
                 void Luau()
                 {
+
                     if (currentTime >= 900 && currentTime <= 1400)
                     {
 
@@ -473,6 +624,7 @@ namespace Always_On_Server
                     if (currentTime >= 2200 && currentTime <= 2400)
                     {
 
+
                         Game1.player.team.SetLocalReady("festivalStart", true);
                         Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalStart", true, (ConfirmationDialog.behavior)(who =>
                         {
@@ -495,7 +647,8 @@ namespace Always_On_Server
                 {
                     if (currentTime >= 900 && currentTime <= 1500)
                     {
-                        
+
+
                         Game1.player.team.SetLocalReady("festivalStart", true);
                         Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalStart", true, (ConfirmationDialog.behavior)(who =>
                         {
@@ -524,6 +677,8 @@ namespace Always_On_Server
 
                     if (currentTime >= 2200 && currentTime <= 2350)
                     {
+                        
+
 
                         Game1.player.team.SetLocalReady("festivalStart", true);
                         Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalStart", true, (ConfirmationDialog.behavior)(who =>
@@ -548,6 +703,7 @@ namespace Always_On_Server
                 {
                     if (currentTime >= 900 && currentTime <= 1400)
                     {
+                        
 
                         Game1.player.team.SetLocalReady("festivalStart", true);
                         Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalStart", true, (ConfirmationDialog.behavior)(who =>
@@ -571,6 +727,7 @@ namespace Always_On_Server
                 {
                     if (currentTime >= 900 && currentTime <= 1400)
                     {
+                       
 
                         Game1.player.team.SetLocalReady("festivalStart", true);
                         Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalStart", true, (ConfirmationDialog.behavior)(who =>
@@ -597,6 +754,7 @@ namespace Always_On_Server
 
         private void GoToBed()
         {
+
             Game1.displayHUD = true;
             Game1.warpFarmer("Farmhouse", 9, 9, false);
             this.Helper.Reflection.GetMethod(Game1.currentLocation, "startSleep").Invoke();
@@ -619,4 +777,5 @@ namespace Always_On_Server
 
     }
 }
+
 
