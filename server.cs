@@ -24,7 +24,7 @@ using StardewValley.Network;
 // need third line to actually send messages what could it be?
 
 
-namespace test
+namespace Always_On_Server
 {
 
 
