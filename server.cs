@@ -9,15 +9,13 @@ using System.Linq;
 using StardewModdingAPI.Utilities;
 
 
-// TODOs and NOtes 
-
-// setup GUI simple additional prompt when you get in bed
-// perhaps just add shortcut key to modconfig for server toggle
-//add pause banner that says SERVER MODE! maybe serach for freezeControls command to find teh pause banner
-// use copy to clipboard function in game to copy invite code to clipboard then write 
 
 
-namespace test
+
+
+
+
+namespace Always_On_Server
 {
     class ModConfig
     {
@@ -26,9 +24,7 @@ namespace test
         public int luauSoupCountDownConfig { get; set; } = 240;
         public int jellyDanceCountDownConfig { get; set; } = 240;
         public int grangeDisplayCountDownConfig { get; set; } = 240;
-        public int goldenPumpkinCountDownConfig { get; set; } = 10;
         public int iceFishingCountDownConfig { get; set; } = 240;
-        public int winterFeastCountDownConfig { get; set; } = 10;
         public int inviteCodeCopyToClipboardCountDownConfig { get; set; } = 60;
         public string serverHotKey { get; set; } = Keys.L.ToString();
 
@@ -76,27 +72,27 @@ namespace test
 
         public override void Entry(IModHelper helper)
         {
-            
+
             this.Config = this.Helper.ReadConfig<ModConfig>();
-            
+
 
 
 
 
             helper.ConsoleCommands.Add("server", "Toggles headless server on/off", this.ServerToggle);
 
-            
+
             SaveEvents.BeforeSave += this.Shipping_Menu; // Shipping Menu handler
             GameEvents.OneSecondTick += this.GameEvents_OneSecondTick; //game tick event handler
             TimeEvents.TimeOfDayChanged += this.TimeEvents_TimeOfDayChanged; // Time of day change handler
             ControlEvents.KeyPressed += this.ControlEvents_KeyPressed;
-            
+
 
 
         }
 
         // toggles server on/off with console command "server"
-        private void ServerToggle(string command, string[] args)          
+        private void ServerToggle(string command, string[] args)
         {
             if (Context.IsWorldReady)
             {
@@ -130,10 +126,10 @@ namespace test
         //toggles server on/off with configurable hotkey
         private void ControlEvents_KeyPressed(object sender, EventArgsKeyPressed e)
         {
-            
+
             if (Context.IsWorldReady)
             {
-                if(e.KeyPressed.ToString() == this.Config.serverHotKey)
+                if (e.KeyPressed.ToString() == this.Config.serverHotKey)
                 {
                     if (IsEnabled == false)
                     {
@@ -200,7 +196,7 @@ namespace test
                 }
             }
 
-            
+
 
             //disable friendship decay
             if (IsEnabled == true) // server toggle
@@ -224,8 +220,8 @@ namespace test
             if (eggHuntAvailable == true && Game1.CurrentEvent != null && Game1.CurrentEvent.isFestival)
             {
                 eggHuntCountDown += 1;
-           
-                float chatEgg = this.Config.eggHuntCountDownConfig / 60f;                    
+
+                float chatEgg = this.Config.eggHuntCountDownConfig / 60f;
                 if (eggHuntCountDown == 1)
                 {
                     Game1.chatBox.activate();
@@ -233,11 +229,11 @@ namespace test
                     Game1.chatBox.chatBox.RecieveCommandInput('\r');
                 }
 
-                if (eggHuntCountDown == this.Config.eggHuntCountDownConfig+1)  
+                if (eggHuntCountDown == this.Config.eggHuntCountDownConfig + 1)
                 {
-                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); 
+                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes");
                 }
-                if (eggHuntCountDown >= this.Config.eggHuntCountDownConfig+5) 
+                if (eggHuntCountDown >= this.Config.eggHuntCountDownConfig + 5)
                 {
                     if (Game1.activeClickableMenu != null)
                     {
@@ -259,11 +255,11 @@ namespace test
                     Game1.chatBox.chatBox.RecieveCommandInput('\r');
                 }
 
-                if (flowerDanceCountDown == this.Config.flowerDanceCountDownConfig+1)  
+                if (flowerDanceCountDown == this.Config.flowerDanceCountDownConfig + 1)
                 {
-                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); 
+                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes");
                 }
-                if (flowerDanceCountDown >= this.Config.flowerDanceCountDownConfig+5)
+                if (flowerDanceCountDown >= this.Config.flowerDanceCountDownConfig + 5)
                 {
                     if (Game1.activeClickableMenu != null)
                     {
@@ -286,11 +282,11 @@ namespace test
                     Game1.chatBox.chatBox.RecieveCommandInput('\r');
                 }
 
-                if (luauSoupCountDown == this.Config.luauSoupCountDownConfig+1)  
+                if (luauSoupCountDown == this.Config.luauSoupCountDownConfig + 1)
                 {
-                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); 
+                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes");
                 }
-                if (luauSoupCountDown >= this.Config.luauSoupCountDownConfig+5) 
+                if (luauSoupCountDown >= this.Config.luauSoupCountDownConfig + 5)
                 {
                     if (Game1.activeClickableMenu != null)
                     {
@@ -313,11 +309,11 @@ namespace test
                     Game1.chatBox.chatBox.RecieveCommandInput('\r');
                 }
 
-                if (jellyDanceCountDown == this.Config.jellyDanceCountDownConfig+1)  
+                if (jellyDanceCountDown == this.Config.jellyDanceCountDownConfig + 1)
                 {
-                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); 
+                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes");
                 }
-                if (jellyDanceCountDown >= this.Config.jellyDanceCountDownConfig+5) 
+                if (jellyDanceCountDown >= this.Config.jellyDanceCountDownConfig + 5)
                 {
                     if (Game1.activeClickableMenu != null)
                     {
@@ -340,11 +336,11 @@ namespace test
                     Game1.chatBox.chatBox.RecieveCommandInput('\r');
                 }
 
-                if (grangeDisplayCountDown == this.Config.grangeDisplayCountDownConfig+1)  
+                if (grangeDisplayCountDown == this.Config.grangeDisplayCountDownConfig + 1)
                 {
-                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes");  
+                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes");
                 }
-                if (grangeDisplayCountDown == this.Config.grangeDisplayCountDownConfig+5) 
+                if (grangeDisplayCountDown == this.Config.grangeDisplayCountDownConfig + 5)
                 {
                     Game1.player.team.SetLocalReady("festivalEnd", true);
                     Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalEnd", true, (ConfirmationDialog.behavior)(who =>
@@ -361,7 +357,7 @@ namespace test
             {
                 goldenPumpkinCountDown += 1;
 
-                if (goldenPumpkinCountDown == 10) 
+                if (goldenPumpkinCountDown == 10)
                 {
                     Game1.player.team.SetLocalReady("festivalEnd", true);
                     Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalEnd", true, (ConfirmationDialog.behavior)(who =>
@@ -386,12 +382,12 @@ namespace test
                     Game1.chatBox.chatBox.RecieveCommandInput('\r');
                 }
 
-                if (iceFishingCountDown == this.Config.iceFishingCountDownConfig+1)  
+                if (iceFishingCountDown == this.Config.iceFishingCountDownConfig + 1)
                 {
-                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); 
+                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes");
                 }
-                if (iceFishingCountDown >= this.Config.iceFishingCountDownConfig+5)
-                { 
+                if (iceFishingCountDown >= this.Config.iceFishingCountDownConfig + 5)
+                {
                     if (Game1.activeClickableMenu != null)
                     {
                         this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true);
@@ -419,7 +415,7 @@ namespace test
         }
 
 
-    
+
 
 
 
@@ -440,7 +436,7 @@ namespace test
                 else if (numPlayers <= 0)
                 {
                     Game1.paused = true;
-                    
+
                 }
 
                 gameTicks = 0;
@@ -474,7 +470,7 @@ namespace test
 
 
 
-                if (currentDate == eggFestival && numPlayers >= 1) 
+                if (currentDate == eggFestival && numPlayers >= 1)
                 {
                     if (eggHuntAvailable == false)
                     {
@@ -489,7 +485,7 @@ namespace test
                     EggFestival();
                 }
 
-                else if (currentDate == flowerDance && numPlayers >= 1) 
+                else if (currentDate == flowerDance && numPlayers >= 1)
                 {
                     if (flowerDanceAvailable == false)
                     {
@@ -503,7 +499,7 @@ namespace test
                     FlowerDance();
                 }
 
-                else if (currentDate == luau && numPlayers >= 1) 
+                else if (currentDate == luau && numPlayers >= 1)
                 {
                     if (luauSoupAvailable == false)
                     {
@@ -517,7 +513,7 @@ namespace test
                     Luau();
                 }
 
-                else if (currentDate == danceOfJellies && numPlayers >= 1) 
+                else if (currentDate == danceOfJellies && numPlayers >= 1)
                 {
                     if (jellyDanceAvailable == false)
                     {
@@ -531,7 +527,7 @@ namespace test
                     DanceOfTheMoonlightJellies();
                 }
 
-                else if (currentDate == stardewValleyFair && numPlayers >= 1) 
+                else if (currentDate == stardewValleyFair && numPlayers >= 1)
                 {
                     if (grangeDisplayAvailable == false)
                     {
@@ -545,7 +541,7 @@ namespace test
                     StardewValleyFair();
                 }
 
-                else if (currentDate == spiritsEve && numPlayers >= 1) 
+                else if (currentDate == spiritsEve && numPlayers >= 1)
                 {
                     if (goldenPumpkinAvailable == false)
                     {
@@ -559,7 +555,7 @@ namespace test
                     SpiritsEve();
                 }
 
-                else if (currentDate == festivalOfIce && numPlayers >= 1) 
+                else if (currentDate == festivalOfIce && numPlayers >= 1)
                 {
                     if (iceFishingAvailable == false)
                     {
@@ -573,7 +569,7 @@ namespace test
                     FestivalOfIce();
                 }
 
-                else if (currentDate == feastOfWinterStar && numPlayers >= 1) 
+                else if (currentDate == feastOfWinterStar && numPlayers >= 1)
                 {
                     if (winterFeastAvailable == false)
                     {
@@ -601,7 +597,7 @@ namespace test
                 {
                     if (currentTime >= 900 && currentTime <= 1400)
                     {
-                        
+
 
 
                         //teleports to egg festival
@@ -734,7 +730,7 @@ namespace test
 
                     if (currentTime >= 2200 && currentTime <= 2350)
                     {
-                        
+
 
 
                         Game1.player.team.SetLocalReady("festivalStart", true);
@@ -760,7 +756,7 @@ namespace test
                 {
                     if (currentTime >= 900 && currentTime <= 1400)
                     {
-                        
+
 
                         Game1.player.team.SetLocalReady("festivalStart", true);
                         Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalStart", true, (ConfirmationDialog.behavior)(who =>
@@ -784,7 +780,7 @@ namespace test
                 {
                     if (currentTime >= 900 && currentTime <= 1400)
                     {
-                       
+
 
                         Game1.player.team.SetLocalReady("festivalStart", true);
                         Game1.activeClickableMenu = (IClickableMenu)new ReadyCheckDialog("festivalStart", true, (ConfirmationDialog.behavior)(who =>
