@@ -1,19 +1,20 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
-using StardewValley.Network;
+using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
+using System.Linq;
+using StardewModdingAPI.Utilities;
+
 
 // TODOs and NOtes 
 
 // setup GUI simple additional prompt when you get in bed
-
+// perhaps just add shortcut key to modconfig for server toggle
 //add pause banner that says SERVER MODE! maybe serach for freezeControls command to find teh pause banner
+// use copy to clipboard function in game to copy invite code to clipboard then write 
 
 
 namespace test
@@ -25,9 +26,12 @@ namespace test
         public int luauSoupCountDownConfig { get; set; } = 240;
         public int jellyDanceCountDownConfig { get; set; } = 240;
         public int grangeDisplayCountDownConfig { get; set; } = 240;
-        public int goldenPumpkinCountDownConfig { get; set; } = 240;
+        public int goldenPumpkinCountDownConfig { get; set; } = 10;
         public int iceFishingCountDownConfig { get; set; } = 240;
-        public int winterFeastCountDownConfig { get; set; } = 240;
+        public int winterFeastCountDownConfig { get; set; } = 10;
+        public int inviteCodeCopyToClipboardCountDownConfig { get; set; } = 60;
+        public string serverHotKey { get; set; } = Keys.L.ToString();
+
     }
 
 
@@ -39,13 +43,10 @@ namespace test
     {
         /// <summary>The mod configuration from the player.</summary>
         private ModConfig Config;
-        
-
-
-
 
         private int gameTicks; //stores 1s game ticks for pause code
         private int gameClockTicks; //stores in game clock change
+        private int inviteDelayTicks = 1; //stores time until next invite code is copied to cliboard
         private int numPlayers = 0; //stores number of players
         private bool IsEnabled = false;  //stores if the the server mod is enabled 
         private readonly Dictionary<string, int> PreviousFriendships = new Dictionary<string, int>();  //stores friendship values
@@ -75,6 +76,7 @@ namespace test
 
         public override void Entry(IModHelper helper)
         {
+            
             this.Config = this.Helper.ReadConfig<ModConfig>();
             
 
@@ -83,40 +85,84 @@ namespace test
 
             helper.ConsoleCommands.Add("server", "Toggles headless server on/off", this.ServerToggle);
 
+            
             SaveEvents.BeforeSave += this.Shipping_Menu; // Shipping Menu handler
             GameEvents.OneSecondTick += this.GameEvents_OneSecondTick; //game tick event handler
             TimeEvents.TimeOfDayChanged += this.TimeEvents_TimeOfDayChanged; // Time of day change handler
-
+            ControlEvents.KeyPressed += this.ControlEvents_KeyPressed;
+            
 
 
         }
 
-        // toggles server on/off
+        // toggles server on/off with console command "server"
         private void ServerToggle(string command, string[] args)          
         {
-            if (IsEnabled == false)
+            if (Context.IsWorldReady)
             {
-                IsEnabled = true;
-                this.Monitor.Log("The server is running!", LogLevel.Info);
-                Game1.chatBox.activate();
-                Game1.chatBox.setText("I am AFK in Server Mode.");
-                Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                if (IsEnabled == false)
+                {
+                    IsEnabled = true;
+                    this.Monitor.Log("The server is running!", LogLevel.Info);
+                    Game1.chatBox.activate();
+                    Game1.chatBox.setText("The Host is in Server Mode!");
+                    Game1.chatBox.chatBox.RecieveCommandInput('\r');
 
-               Game1.displayHUD = true;
-               Game1.addHUDMessage(new HUDMessage("Server Mode Activated!", ""));
+                    Game1.displayHUD = true;
+                    Game1.addHUDMessage(new HUDMessage("Server Mode On!", ""));
 
-               Game1.options.pauseWhenOutOfFocus = false;
-            }
-            else if (IsEnabled == true)
-            {
-                IsEnabled = false;
-                this.Monitor.Log("The server is turned off!", LogLevel.Info);
-                Game1.chatBox.activate();
-                Game1.chatBox.setText("I have returned from being a Headless Server!");
-                Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                    Game1.options.pauseWhenOutOfFocus = false;
+                }
+                else if (IsEnabled == true)
+                {
+                    IsEnabled = false;
+                    this.Monitor.Log("The server is turned off!", LogLevel.Info);
+                    Game1.chatBox.activate();
+                    Game1.chatBox.setText("The Host has returned!");
+                    Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                    Game1.displayHUD = true;
+                    Game1.addHUDMessage(new HUDMessage("Server Mode Off!", ""));
 
+                }
             }
         }
+
+        //toggles server on/off with configurable hotkey
+        private void ControlEvents_KeyPressed(object sender, EventArgsKeyPressed e)
+        {
+            
+            if (Context.IsWorldReady)
+            {
+                if(e.KeyPressed.ToString() == this.Config.serverHotKey)
+                {
+                    if (IsEnabled == false)
+                    {
+                        IsEnabled = true;
+                        this.Monitor.Log("The server is running!", LogLevel.Info);
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("The Host is in Server Mode!");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+
+                        Game1.displayHUD = true;
+                        Game1.addHUDMessage(new HUDMessage("Server Mode On!", ""));
+
+                        Game1.options.pauseWhenOutOfFocus = false;
+                    }
+                    else if (IsEnabled == true)
+                    {
+                        IsEnabled = false;
+                        this.Monitor.Log("The server is turned off!", LogLevel.Info);
+                        Game1.chatBox.activate();
+                        Game1.chatBox.setText("The Host has returned!");
+                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                        Game1.displayHUD = true;
+                        Game1.addHUDMessage(new HUDMessage("Server Mode Off!", ""));
+
+                    }
+                }
+            }
+        }
+
 
 
 
@@ -132,7 +178,18 @@ namespace test
                 return;
             }
 
-            //NoClientsPause();  //Turn back on when done testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            NoClientsPause();  //Turn back on when done testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+            //Invite Code Copier 
+            inviteDelayTicks += 1;
+            if (inviteDelayTicks == this.Config.inviteCodeCopyToClipboardCountDownConfig)
+            {
+                DesktopClipboard.SetText(Game1.server.getInviteCode());
+                inviteDelayTicks = 1;
+            }
+
+
+
 
             //left click menu spammer to get through random events happening
             if (IsEnabled == true) // server toggle
@@ -178,7 +235,7 @@ namespace test
 
                 if (eggHuntCountDown == this.Config.eggHuntCountDownConfig+1)  
                 {
-                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger eggHunt Scene, 
+                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); 
                 }
                 if (eggHuntCountDown >= this.Config.eggHuntCountDownConfig+5) 
                 {
@@ -204,7 +261,7 @@ namespace test
 
                 if (flowerDanceCountDown == this.Config.flowerDanceCountDownConfig+1)  
                 {
-                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
+                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); 
                 }
                 if (flowerDanceCountDown >= this.Config.flowerDanceCountDownConfig+5)
                 {
@@ -231,7 +288,7 @@ namespace test
 
                 if (luauSoupCountDown == this.Config.luauSoupCountDownConfig+1)  
                 {
-                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
+                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); 
                 }
                 if (luauSoupCountDown >= this.Config.luauSoupCountDownConfig+5) 
                 {
@@ -258,7 +315,7 @@ namespace test
 
                 if (jellyDanceCountDown == this.Config.jellyDanceCountDownConfig+1)  
                 {
-                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
+                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); 
                 }
                 if (jellyDanceCountDown >= this.Config.jellyDanceCountDownConfig+5) 
                 {
@@ -285,7 +342,7 @@ namespace test
 
                 if (grangeDisplayCountDown == this.Config.grangeDisplayCountDownConfig+1)  
                 {
-                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger flower dance, 
+                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes");  
                 }
                 if (grangeDisplayCountDown == this.Config.grangeDisplayCountDownConfig+5) 
                 {
@@ -331,7 +388,7 @@ namespace test
 
                 if (iceFishingCountDown == this.Config.iceFishingCountDownConfig+1)  
                 {
-                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); //trigger eggHunt Scene, 
+                    this.Helper.Reflection.GetMethod(Game1.CurrentEvent, "answerDialogueQuestion", true).Invoke(Game1.getCharacterFromName("Lewis"), "yes"); 
                 }
                 if (iceFishingCountDown >= this.Config.iceFishingCountDownConfig+5)
                 { 
@@ -383,7 +440,7 @@ namespace test
                 else if (numPlayers <= 0)
                 {
                     Game1.paused = true;
-                    this.Monitor.Log($"The number of connected players is: {numPlayers} and the game is Paused", LogLevel.Debug);
+                    
                 }
 
                 gameTicks = 0;
@@ -530,7 +587,7 @@ namespace test
                     FeastOfWinterStar();
                 }
 
-                else if (numPlayers >= 0)  //turn back to 1 after testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                else if (numPlayers >= 1)  //turn back to 1 after testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 {
                     GoToBed();
                 }
