@@ -9,10 +9,12 @@ using System.Linq;
 using StardewModdingAPI.Utilities;
 
 
+// TODOs and NOtes 
 
-
-
-
+// setup GUI simple additional prompt when you get in bed
+// perhaps just add shortcut key to modconfig for server toggle
+//add pause banner that says SERVER MODE! maybe serach for freezeControls command to find teh pause banner
+// use copy to clipboard function in game to copy invite code to clipboard then write 
 
 
 namespace Always_On_Server
@@ -25,7 +27,7 @@ namespace Always_On_Server
         public int jellyDanceCountDownConfig { get; set; } = 240;
         public int grangeDisplayCountDownConfig { get; set; } = 240;
         public int iceFishingCountDownConfig { get; set; } = 240;
-        public int inviteCodeCopyToClipboardCountDownConfig { get; set; } = 60;
+        public bool copyInviteCode { get; set; } = true;
         public string serverHotKey { get; set; } = Keys.L.ToString();
 
     }
@@ -45,6 +47,7 @@ namespace Always_On_Server
         private int inviteDelayTicks = 1; //stores time until next invite code is copied to cliboard
         private int numPlayers = 0; //stores number of players
         private bool IsEnabled = false;  //stores if the the server mod is enabled 
+        private string inviteCode;
         private readonly Dictionary<string, int> PreviousFriendships = new Dictionary<string, int>();  //stores friendship values
         private bool eggHuntAvailable = false; //is egg festival ready start timer for triggering eggHunt Event
         private int eggHuntCountDown; //to trigger egghunt after set time
@@ -177,11 +180,13 @@ namespace Always_On_Server
             NoClientsPause();  //Turn back on when done testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             //Invite Code Copier 
-            inviteDelayTicks += 1;
-            if (inviteDelayTicks == this.Config.inviteCodeCopyToClipboardCountDownConfig)
+            if (this.Config.copyInviteCode == true)
             {
-                DesktopClipboard.SetText(Game1.server.getInviteCode());
-                inviteDelayTicks = 1;
+                if (!String.Equals(inviteCode, Game1.server.getInviteCode()))
+                {
+                    DesktopClipboard.SetText(Game1.server.getInviteCode());
+                    inviteCode = Game1.server.getInviteCode();
+                }
             }
 
 
