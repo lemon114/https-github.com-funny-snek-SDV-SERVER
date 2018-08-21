@@ -2,6 +2,7 @@ using System;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using System.IO;
 using StardewValley.Menus;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
@@ -9,12 +10,6 @@ using System.Linq;
 using StardewModdingAPI.Utilities;
 
 
-// TODOs and NOtes 
-
-// setup GUI simple additional prompt when you get in bed
-// perhaps just add shortcut key to modconfig for server toggle
-//add pause banner that says SERVER MODE! maybe serach for freezeControls command to find teh pause banner
-// use copy to clipboard function in game to copy invite code to clipboard then write 
 
 
 namespace Always_On_Server
@@ -51,18 +46,25 @@ namespace Always_On_Server
         private readonly Dictionary<string, int> PreviousFriendships = new Dictionary<string, int>();  //stores friendship values
         private bool eggHuntAvailable = false; //is egg festival ready start timer for triggering eggHunt Event
         private int eggHuntCountDown; //to trigger egghunt after set time
+
         private bool flowerDanceAvailable = false;
         private int flowerDanceCountDown;
+
         private bool luauSoupAvailable = false;
         private int luauSoupCountDown;
+
         private bool jellyDanceAvailable = false;
         private int jellyDanceCountDown;
+
         private bool grangeDisplayAvailable = false;
         private int grangeDisplayCountDown;
+
         private bool goldenPumpkinAvailable = false;
         private int goldenPumpkinCountDown;
+
         private bool iceFishingAvailable = false;
         private int iceFishingCountDown;
+
         private bool winterFeastAvailable = false;
         private int winterFeastCountDown;
 
@@ -184,9 +186,41 @@ namespace Always_On_Server
             {
                 if (!String.Equals(inviteCode, Game1.server.getInviteCode()))
                 {
-                    DesktopClipboard.SetText(Game1.server.getInviteCode());
+                    DesktopClipboard.SetText("Invite Code: " + Game1.server.getInviteCode());
                     inviteCode = Game1.server.getInviteCode();
+
+
+                    //write code to a InviteCode.txt in the Always On Server mod folder
+                    try
+                    {
+
+                        //Pass the filepath and filename to the StreamWriter Constructor
+                        StreamWriter sw = new StreamWriter("Mods/Always On Server/InviteCode.txt");
+
+                        //Write a line of text
+                        sw.WriteLine(inviteCode);
+                        //Close the file
+                        sw.Close();
+                    }
+                    catch (Exception b)
+                    {
+                        Console.WriteLine("Exception: " + b.Message);
+                    }
+                    finally
+                    {
+                        Console.WriteLine("Executing finally block.");
+                    }
+
+
+
                 }
+                
+
+
+
+
+
+
             }
 
 
@@ -465,6 +499,7 @@ namespace Always_On_Server
                 var currentTime = Game1.timeOfDay;
                 var currentDate = SDate.Now();
                 var eggFestival = new SDate(13, "spring");
+                var dayAfterEggFestival = new SDate(14, "spring");
                 var flowerDance = new SDate(24, "spring");
                 var luau = new SDate(11, "summer");
                 var danceOfJellies = new SDate(28, "summer");
@@ -475,9 +510,9 @@ namespace Always_On_Server
 
 
 
-                if (currentDate == eggFestival && numPlayers >= 1)
+                if (currentDate == eggFestival && numPlayers >= 1)   //set back to 1 after testing~!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 {
-                    if (eggHuntAvailable == false)
+                    if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
                         Game1.chatBox.setText("Egg Festival Today!");
@@ -485,14 +520,16 @@ namespace Always_On_Server
                         Game1.chatBox.activate();
                         Game1.chatBox.setText("I will not be in bed until after 2:00 P.M.");
                         Game1.chatBox.chatBox.RecieveCommandInput('\r');
-                    }
 
+                    }
                     EggFestival();
                 }
 
+
+
                 else if (currentDate == flowerDance && numPlayers >= 1)
                 {
-                    if (flowerDanceAvailable == false)
+                    if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
                         Game1.chatBox.setText("Flower Dance Today!");
@@ -500,13 +537,14 @@ namespace Always_On_Server
                         Game1.chatBox.activate();
                         Game1.chatBox.setText("I will not be in bed until after 2:00 P.M.");
                         Game1.chatBox.chatBox.RecieveCommandInput('\r');
+
                     }
                     FlowerDance();
                 }
 
                 else if (currentDate == luau && numPlayers >= 1)
                 {
-                    if (luauSoupAvailable == false)
+                    if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
                         Game1.chatBox.setText("Luau Today!");
@@ -520,7 +558,7 @@ namespace Always_On_Server
 
                 else if (currentDate == danceOfJellies && numPlayers >= 1)
                 {
-                    if (jellyDanceAvailable == false)
+                    if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
                         Game1.chatBox.setText("Dance of the Moonlight Jellies Tonight!");
@@ -534,7 +572,7 @@ namespace Always_On_Server
 
                 else if (currentDate == stardewValleyFair && numPlayers >= 1)
                 {
-                    if (grangeDisplayAvailable == false)
+                    if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
                         Game1.chatBox.setText("Stardew Valley Fair Today!");
@@ -548,7 +586,7 @@ namespace Always_On_Server
 
                 else if (currentDate == spiritsEve && numPlayers >= 1)
                 {
-                    if (goldenPumpkinAvailable == false)
+                    if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
                         Game1.chatBox.setText("Spirit's Eve Tonight!");
@@ -562,7 +600,7 @@ namespace Always_On_Server
 
                 else if (currentDate == festivalOfIce && numPlayers >= 1)
                 {
-                    if (iceFishingAvailable == false)
+                    if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
                         Game1.chatBox.setText("Festival of Ice Today!");
@@ -576,7 +614,7 @@ namespace Always_On_Server
 
                 else if (currentDate == feastOfWinterStar && numPlayers >= 1)
                 {
-                    if (winterFeastAvailable == false)
+                    if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
                         Game1.chatBox.setText("Feast of the Winter Star Today!");
@@ -835,5 +873,6 @@ namespace Always_On_Server
 
     }
 }
+
 
 
