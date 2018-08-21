@@ -1,5 +1,4 @@
 const Discord = require('discord.js');
-const clipboardy = require('clipboardy');
 const bot = new Discord.Client();
 const TOKEN = '!!!!Token Goes Here!!!!!'
 
