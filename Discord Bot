@@ -1,0 +1,26 @@
+const Discord = require('discord.js');
+const clipboardy = require('clipboardy');
+const bot = new Discord.Client();
+const TOKEN = '!!!!Token Goes Here!!!!!'
+
+
+bot.on('message', function(message)
+{
+
+    if(message.content == '!code')
+    {
+        var fs = require('fs');
+        fs.readFile('C://Program Files (x86)/Steam/steamapps/common/Stardew Valley/Mods/Always On Server/InviteCode.txt', 'utf8', function(err, data) {  
+            if (err) throw err;
+            console.log(data);
+            message.reply(data);
+        });
+           
+
+    }
+
+}
+);
+
+
+bot.login(TOKEN);
