@@ -43,6 +43,7 @@ namespace Always_On_Server
         private int numPlayers = 0; //stores number of players
         private bool IsEnabled = false;  //stores if the the server mod is enabled 
         private string inviteCode;
+        private string inviteCodeTXT;
         private readonly Dictionary<string, int> PreviousFriendships = new Dictionary<string, int>();  //stores friendship values
         private bool eggHuntAvailable = false; //is egg festival ready start timer for triggering eggHunt Event
         private int eggHuntCountDown; //to trigger egghunt after set time
@@ -188,52 +189,48 @@ namespace Always_On_Server
                 {
                     DesktopClipboard.SetText("Invite Code: " + Game1.server.getInviteCode());
                     inviteCode = Game1.server.getInviteCode();
-
-
-                    //write code to a InviteCode.txt in the Always On Server mod folder
-                    try
-                    {
-
-                        //Pass the filepath and filename to the StreamWriter Constructor
-                        StreamWriter sw = new StreamWriter("Mods/Always On Server/InviteCode.txt");
-
-                        //Write a line of text
-                        sw.WriteLine(inviteCode);
-                        //Close the file
-                        sw.Close();
-                    }
-                    catch (Exception b)
-                    {
-                        Console.WriteLine("Exception: " + b.Message);
-                    }
-                    finally
-                    {
-                        Console.WriteLine("Executing finally block.");
-                    }
-
-
-
                 }
-                
-
-
-
-
-
-
             }
 
-
-
-
-            //left click menu spammer to get through random events happening
-            if (IsEnabled == true) // server toggle
+            if (!String.Equals(inviteCodeTXT, Game1.server.getInviteCode()))
             {
-                if (Game1.activeClickableMenu != null)
+                inviteCodeTXT = Game1.server.getInviteCode();
+
+
+                //write code to a InviteCode.txt in the Always On Server mod folder
+                try
                 {
-                    this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true);
+
+                    //Pass the filepath and filename to the StreamWriter Constructor
+                    StreamWriter sw = new StreamWriter("Mods/Always On Server/InviteCode.txt");
+
+                    //Write a line of text
+                    sw.WriteLine(inviteCode);
+                    //Close the file
+                    sw.Close();
+                }
+                catch (Exception b)
+                {
+                    Console.WriteLine("Exception: " + b.Message);
+                }
+                finally
+                {
+                    Console.WriteLine("Executing finally block.");
                 }
             }
+
+
+
+
+
+                //left click menu spammer to get through random events happening
+                if (IsEnabled == true) // server toggle
+                {
+                    if (Game1.activeClickableMenu != null)
+                    {
+                        this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true);
+                    }
+                }
 
 
 
