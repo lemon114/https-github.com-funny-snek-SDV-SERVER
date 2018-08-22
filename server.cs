@@ -228,7 +228,7 @@ namespace Always_On_Server
                 {
                     if (Game1.activeClickableMenu != null)
                     {
-                        this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true);
+                        this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(0, 0, true);
                     }
                 }
 
@@ -861,15 +861,22 @@ namespace Always_On_Server
         {
             if (IsEnabled == false) // server toggle
                 return;
-            if (Game1.activeClickableMenu != null)
-            {
+
                 this.Monitor.Log("This is the Shipping Menu");
                 this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
-            }
+            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
+            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
+            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
+            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
+            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
+            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
+            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
+            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
         }
 
     }
 }
+
 
 
 
