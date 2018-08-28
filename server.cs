@@ -9,21 +9,29 @@ using System.Collections.Generic;
 using System.Linq;
 using StardewModdingAPI.Utilities;
 
+//things to do
 
+// set sleep time config
+// set up remote pause command with true/false toggle in config
 
 
 namespace Always_On_Server
 {
     class ModConfig
     {
-        public int eggHuntCountDownConfig { get; set; } = 240;
-        public int flowerDanceCountDownConfig { get; set; } = 240;
-        public int luauSoupCountDownConfig { get; set; } = 240;
-        public int jellyDanceCountDownConfig { get; set; } = 240;
-        public int grangeDisplayCountDownConfig { get; set; } = 240;
-        public int iceFishingCountDownConfig { get; set; } = 240;
-        public bool copyInviteCode { get; set; } = true;
-        public string serverHotKey { get; set; } = Keys.L.ToString();
+        public string serverHotKey { get; set; } = Keys.F9.ToString();
+        public int timeOfDayToSleep { get; set; } = 2200;
+        public bool festivalsOn { get; set; } = true;
+        public bool clientsCanPause { get; set; } = false;
+        public bool copyInviteCodeToClipboard { get; set; } = true;
+
+        public int eggHuntCountDownConfig { get; set; } = 60;
+        public int flowerDanceCountDownConfig { get; set; } = 60;
+        public int luauSoupCountDownConfig { get; set; } = 60;
+        public int jellyDanceCountDownConfig { get; set; } = 60;
+        public int grangeDisplayCountDownConfig { get; set; } = 60;
+        public int iceFishingCountDownConfig { get; set; } = 60;
+
 
     }
 
@@ -166,7 +174,11 @@ namespace Always_On_Server
         }
 
 
-
+        private void FestivalsToggle()
+        {
+            if (this.Config.festivalsOn == false)
+                return;
+        }
 
 
 
@@ -182,8 +194,15 @@ namespace Always_On_Server
 
             NoClientsPause();  //Turn back on when done testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+            if (this.Config.clientsCanPause == true)
+            {
+                clientControlledPause();
+            }
+
+
+
             //Invite Code Copier 
-            if (this.Config.copyInviteCode == true)
+            if (this.Config.copyInviteCodeToClipboard == true)
             {
                 if (!String.Equals(inviteCode, Game1.server.getInviteCode()))
                 {
@@ -223,14 +242,14 @@ namespace Always_On_Server
 
 
 
-                //left click menu spammer to get through random events happening
-                if (IsEnabled == true) // server toggle
+            //left click menu spammer to get through random events happening
+             if (IsEnabled == true) // server toggle
+             {
+                if (Game1.activeClickableMenu != null)
                 {
-                    if (Game1.activeClickableMenu != null)
-                    {
-                        this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(0, 0, true);
-                    }
+                    this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(0, 0, true);
                 }
+             }
 
 
 
@@ -251,6 +270,12 @@ namespace Always_On_Server
                 foreach (var pair in Game1.player.friendshipData.FieldDict)
                     this.PreviousFriendships[pair.Key] = pair.Value.Value.Points;
             }
+
+
+
+
+
+
 
             //eggHunt event
             if (eggHuntAvailable == true && Game1.CurrentEvent != null && Game1.CurrentEvent.isFestival)
@@ -479,6 +504,25 @@ namespace Always_On_Server
             }
         }
 
+        // player command pause/unpause 
+        private void clientControlledPause()
+        {
+            List<ChatMessage> messages = this.Helper.Reflection.GetField<List<ChatMessage>>(Game1.chatBox, "messages").GetValue();
+            string[] messageDumpString = messages.SelectMany(p => p.message).Select(p => p.message).ToArray();
+            string lastFragment = messageDumpString.Last().Split(':').Last().Trim();
+
+            if (lastFragment == "!pause")
+            {
+                Game1.paused = true;
+            }
+            if (lastFragment == "!unpause")
+            {
+                Game1.paused = false;
+            }
+
+
+
+        }
 
 
         // auto-sleep and Holiday code
@@ -509,6 +553,8 @@ namespace Always_On_Server
 
                 if (currentDate == eggFestival && numPlayers >= 1)   //set back to 1 after testing~!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 {
+                    FestivalsToggle();
+
                     if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
@@ -526,6 +572,8 @@ namespace Always_On_Server
 
                 else if (currentDate == flowerDance && numPlayers >= 1)
                 {
+                    FestivalsToggle();
+
                     if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
@@ -541,6 +589,8 @@ namespace Always_On_Server
 
                 else if (currentDate == luau && numPlayers >= 1)
                 {
+                    FestivalsToggle();
+
                     if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
@@ -555,6 +605,8 @@ namespace Always_On_Server
 
                 else if (currentDate == danceOfJellies && numPlayers >= 1)
                 {
+                    FestivalsToggle();
+
                     if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
@@ -569,6 +621,8 @@ namespace Always_On_Server
 
                 else if (currentDate == stardewValleyFair && numPlayers >= 1)
                 {
+                    FestivalsToggle();
+
                     if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
@@ -583,6 +637,8 @@ namespace Always_On_Server
 
                 else if (currentDate == spiritsEve && numPlayers >= 1)
                 {
+                    FestivalsToggle();
+
                     if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
@@ -597,6 +653,8 @@ namespace Always_On_Server
 
                 else if (currentDate == festivalOfIce && numPlayers >= 1)
                 {
+                    FestivalsToggle();
+
                     if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
@@ -611,6 +669,8 @@ namespace Always_On_Server
 
                 else if (currentDate == feastOfWinterStar && numPlayers >= 1)
                 {
+                    FestivalsToggle();
+
                     if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
@@ -623,12 +683,12 @@ namespace Always_On_Server
                     FeastOfWinterStar();
                 }
 
-                else if (numPlayers >= 1)  //turn back to 1 after testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                else if (currentTime >= this.Config.timeOfDayToSleep && numPlayers >= 1)  //turn back to 1 after testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 {
                     GoToBed();
                 }
 
-                gameClockTicks = 0;
+                gameClockTicks = 0;   // never reaches rest of code bc gameClockTicks is reset to 0, these methods below are called higher up.
 
 
 
@@ -651,7 +711,7 @@ namespace Always_On_Server
                         eggHuntAvailable = true;
 
                     }
-                    else if (currentTime >= 1410)
+                    else if (currentTime >= 1410 && currentTime >= this.Config.timeOfDayToSleep)
                     {
                         GoToBed();
                         eggHuntAvailable = false;
@@ -674,7 +734,7 @@ namespace Always_On_Server
                         flowerDanceAvailable = true;
 
                     }
-                    else if (currentTime >= 1410)
+                    else if (currentTime >= 1410 && currentTime >= this.Config.timeOfDayToSleep)
                     {
                         GoToBed();
                         flowerDanceAvailable = false;
@@ -698,7 +758,7 @@ namespace Always_On_Server
                         luauSoupAvailable = true;
 
                     }
-                    else if (currentTime >= 1410)
+                    else if (currentTime >= 1410 && currentTime >= this.Config.timeOfDayToSleep)
                     {
                         GoToBed();
                         luauSoupAvailable = false;
@@ -728,7 +788,7 @@ namespace Always_On_Server
                         jellyDanceAvailable = true;
 
                     }
-                    else if (currentTime >= 2410)
+                    else if (currentTime >= 2410 && currentTime >= this.Config.timeOfDayToSleep)
                     {
                         GoToBed();
                         jellyDanceAvailable = false;
@@ -752,7 +812,7 @@ namespace Always_On_Server
                         grangeDisplayAvailable = true;
 
                     }
-                    else if (currentTime >= 1510)
+                    else if (currentTime >= 1510 && currentTime >= this.Config.timeOfDayToSleep)
                     {
                         GoToBed();
                         Game1.displayHUD = true;
@@ -783,7 +843,7 @@ namespace Always_On_Server
                         goldenPumpkinAvailable = true;
 
                     }
-                    else if (currentTime >= 2400)
+                    else if (currentTime >= 2400 && currentTime >= this.Config.timeOfDayToSleep)
                     {
                         GoToBed();
                         Game1.displayHUD = true;
@@ -808,7 +868,7 @@ namespace Always_On_Server
                         iceFishingAvailable = true;
 
                     }
-                    else if (currentTime >= 1410)
+                    else if (currentTime >= 1410 && currentTime >= this.Config.timeOfDayToSleep)
                     {
                         GoToBed();
                         iceFishingAvailable = false;
@@ -832,7 +892,7 @@ namespace Always_On_Server
                         winterFeastAvailable = true;
 
                     }
-                    else if (currentTime >= 1410)
+                    else if (currentTime >= 1410 && currentTime >= this.Config.timeOfDayToSleep)
                     {
                         GoToBed();
                         winterFeastAvailable = false;
@@ -847,7 +907,7 @@ namespace Always_On_Server
 
         private void GoToBed()
         {
-
+            
             Game1.displayHUD = true;
             Game1.warpFarmer("Farmhouse", 9, 9, false);
             this.Helper.Reflection.GetMethod(Game1.currentLocation, "startSleep").Invoke();
@@ -864,19 +924,8 @@ namespace Always_On_Server
 
                 this.Monitor.Log("This is the Shipping Menu");
                 this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
-            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
-            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
-            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
-            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
-            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
-            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
-            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
-            this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
+
         }
 
     }
 }
-
-
-
-
