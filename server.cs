@@ -113,10 +113,11 @@ namespace Always_On_Server
                 if (IsEnabled == false)
                 {
                     IsEnabled = true;
-                    this.Monitor.Log("The server is running!", LogLevel.Info);
-                    Game1.chatBox.activate();
-                    Game1.chatBox.setText("The Host is in Server Mode!");
-                    Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                    this.Monitor.Log("This has changed", LogLevel.Info);
+                    Game1.chatBox.addInfoMessage("The Host is in Server Mode!");
+                    //Game1.chatBox.activate();
+                    //Game1.chatBox.setText("The Host is in Server Mode!");
+                    //Game1.chatBox.chatBox.RecieveCommandInput('\r');
 
                     Game1.displayHUD = true;
                     Game1.addHUDMessage(new HUDMessage("Server Mode On!", ""));
@@ -126,10 +127,12 @@ namespace Always_On_Server
                 else if (IsEnabled == true)
                 {
                     IsEnabled = false;
-                    this.Monitor.Log("The server is turned off!", LogLevel.Info);
-                    Game1.chatBox.activate();
-                    Game1.chatBox.setText("The Host has returned!");
-                    Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                    this.Monitor.Log("The server off!", LogLevel.Info);
+
+                    Game1.chatBox.addInfoMessage("The Host has returned!");
+                    //Game1.chatBox.activate();
+                    //Game1.chatBox.setText("The Host has returned!");
+                    //Game1.chatBox.chatBox.RecieveCommandInput('\r');
                     Game1.displayHUD = true;
                     Game1.addHUDMessage(new HUDMessage("Server Mode Off!", ""));
 
@@ -148,10 +151,11 @@ namespace Always_On_Server
                     if (IsEnabled == false)
                     {
                         IsEnabled = true;
-                        this.Monitor.Log("The server is running!", LogLevel.Info);
-                        Game1.chatBox.activate();
-                        Game1.chatBox.setText("The Host is in Server Mode!");
-                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                        this.Monitor.Log("The server is on!", LogLevel.Info);
+                        Game1.chatBox.addInfoMessage("The Host is in Server Mode!");
+                        //Game1.chatBox.activate();
+                        //Game1.chatBox.setText("The Host is in Server Mode!");
+                        //Game1.chatBox.chatBox.RecieveCommandInput('\r');
 
                         Game1.displayHUD = true;
                         Game1.addHUDMessage(new HUDMessage("Server Mode On!", ""));
@@ -161,10 +165,12 @@ namespace Always_On_Server
                     else if (IsEnabled == true)
                     {
                         IsEnabled = false;
-                        this.Monitor.Log("The server is turned off!", LogLevel.Info);
-                        Game1.chatBox.activate();
-                        Game1.chatBox.setText("The Host has returned!");
-                        Game1.chatBox.chatBox.RecieveCommandInput('\r');
+                        this.Monitor.Log("The server is off!", LogLevel.Info);
+
+                        Game1.chatBox.addInfoMessage("The Host has returned!");
+                        //Game1.chatBox.activate();
+                        //Game1.chatBox.setText("The Host has returned!");
+                        //Game1.chatBox.chatBox.RecieveCommandInput('\r');
                         Game1.displayHUD = true;
                         Game1.addHUDMessage(new HUDMessage("Server Mode Off!", ""));
 
@@ -211,30 +217,68 @@ namespace Always_On_Server
                 }
             }
 
+            //write code to a InviteCode.txt in the Always On Server mod folder
             if (!String.Equals(inviteCodeTXT, Game1.server.getInviteCode()))
             {
                 inviteCodeTXT = Game1.server.getInviteCode();
 
-
-                //write code to a InviteCode.txt in the Always On Server mod folder
-                try
+                if (eggHuntAvailable == true)
                 {
-
-                    //Pass the filepath and filename to the StreamWriter Constructor
-                    StreamWriter sw = new StreamWriter("Mods/Always On Server/InviteCode.txt");
-
-                    //Write a line of text
-                    sw.WriteLine(inviteCode);
-                    //Close the file
-                    sw.Close();
+                    inviteCodeTXT = "Festival In Progress Try Again Later";
                 }
-                catch (Exception b)
+
+                else if (luauSoupAvailable == true)
                 {
-                    Console.WriteLine("Exception: " + b.Message);
+                    inviteCodeTXT = "Festival In Progress Try Again Later";
                 }
-                finally
+
+                else if (jellyDanceAvailable == true)
                 {
-                    Console.WriteLine("Executing finally block.");
+                    inviteCodeTXT = "Festival In Progress Try Again Later";
+                }
+
+                else if (grangeDisplayAvailable == true)
+                {
+                    inviteCodeTXT = "Festival In Progress Try Again Later";
+                }
+
+                else if (goldenPumpkinAvailable == true)
+                {
+                    inviteCodeTXT = "Festival In Progress Try Again Later";
+                }
+
+                else if (iceFishingAvailable == true)
+                {
+                    inviteCodeTXT = "Festival In Progress Try Again Later";
+                }
+
+                else if (winterFeastAvailable == true)
+                {
+                    inviteCodeTXT = "Festival In Progress Try Again Later";
+                }
+
+                else
+                {
+
+                    try
+                    {
+
+                        //Pass the filepath and filename to the StreamWriter Constructor
+                        StreamWriter sw = new StreamWriter("Mods/Always On Server/InviteCode.txt");
+
+                        //Write a line of text
+                        sw.WriteLine(inviteCodeTXT);
+                        //Close the file
+                        sw.Close();
+                    }
+                    catch (Exception b)
+                    {
+                        Console.WriteLine("Exception: " + b.Message);
+                    }
+                    finally
+                    {
+                        Console.WriteLine("Executing finally block.");
+                    }
                 }
             }
 
@@ -303,7 +347,8 @@ namespace Always_On_Server
                 }
             }
 
-            //flowerDance event
+            //flower dance turned off, causes server crashes
+           /* //flowerDance event
             if (flowerDanceAvailable == true && Game1.CurrentEvent != null && Game1.CurrentEvent.isFestival)
             {
                 flowerDanceCountDown += 1;
@@ -327,7 +372,7 @@ namespace Always_On_Server
                         this.Helper.Reflection.GetMethod(Game1.activeClickableMenu, "receiveLeftClick").Invoke(10, 10, true);
                     }
                 }
-            }
+            }*/
 
             //luauSoup event
             if (luauSoupAvailable == true && Game1.CurrentEvent != null && Game1.CurrentEvent.isFestival)
@@ -408,8 +453,9 @@ namespace Always_On_Server
                     {
                         Game1.exitActiveMenu();
                         Game1.warpFarmer("Farmhouse", 9, 9, false);
-                        Game1.timeOfDay = 2200;
+                        //Game1.timeOfDay = 2200; Maybe Causing Break?
                     }), (ConfirmationDialog.behavior)null);
+                    this.Helper.Reflection.GetMethod(Game1.currentLocation, "startSleep").Invoke(); //hard sleep bc time seems to turn off?
                 }
             }
 
@@ -425,8 +471,9 @@ namespace Always_On_Server
                     {
                         Game1.exitActiveMenu();
                         Game1.warpFarmer("Farmhouse", 9, 9, false);
-                        Game1.timeOfDay = 2200;
+                       // Game1.timeOfDay = 2200; //maybe causing break?
                     }), (ConfirmationDialog.behavior)null);
+                    this.Helper.Reflection.GetMethod(Game1.currentLocation, "startSleep").Invoke(); //hard sleep bc time seems to turn off?
                 }
             }
 
@@ -468,8 +515,10 @@ namespace Always_On_Server
                     {
                         Game1.exitActiveMenu();
                         Game1.warpFarmer("Farmhouse", 9, 9, false);
-                        Game1.timeOfDay = 2200;
+                       // Game1.timeOfDay = 2200; //maybe causing break?
                     }), (ConfirmationDialog.behavior)null);
+
+                    this.Helper.Reflection.GetMethod(Game1.currentLocation, "startSleep").Invoke(); //hard sleep bc time seems to turn off?
                 }
             }
 
@@ -569,7 +618,7 @@ namespace Always_On_Server
                 }
 
 
-
+                  //flower dance message changed to disabled bc it causes crashes
                 else if (currentDate == flowerDance && numPlayers >= 1)
                 {
                     FestivalsToggle();
@@ -577,14 +626,14 @@ namespace Always_On_Server
                     if (currentTime >= 600 && currentTime <= 630)
                     {
                         Game1.chatBox.activate();
-                        Game1.chatBox.setText("Flower Dance Today!");
+                        Game1.chatBox.setText("Flower Dance Today.");
                         Game1.chatBox.chatBox.RecieveCommandInput('\r');
                         Game1.chatBox.activate();
-                        Game1.chatBox.setText("I will not be in bed until after 2:00 P.M.");
+                        Game1.chatBox.setText("I will not be going. It breaks my code.");
                         Game1.chatBox.chatBox.RecieveCommandInput('\r');
 
                     }
-                    FlowerDance();
+                   // FlowerDance();
                 }
 
                 else if (currentDate == luau && numPlayers >= 1)
@@ -711,7 +760,7 @@ namespace Always_On_Server
                         eggHuntAvailable = true;
 
                     }
-                    else if (currentTime >= 1410 && currentTime >= this.Config.timeOfDayToSleep)
+                    else if (currentTime >= 1410)
                     {
                         GoToBed();
                         eggHuntAvailable = false;
@@ -719,7 +768,8 @@ namespace Always_On_Server
                     }
                 }
 
-                void FlowerDance()
+                // flower dance turned off causes game crashes
+                /*void FlowerDance()
                 {
                     if (currentTime >= 900 && currentTime <= 1400)
                     {
@@ -740,7 +790,7 @@ namespace Always_On_Server
                         flowerDanceAvailable = false;
                         flowerDanceCountDown = 0;
                     }
-                }
+                }*/
 
                 void Luau()
                 {
@@ -758,7 +808,7 @@ namespace Always_On_Server
                         luauSoupAvailable = true;
 
                     }
-                    else if (currentTime >= 1410 && currentTime >= this.Config.timeOfDayToSleep)
+                    else if (currentTime >= 1410)
                     {
                         GoToBed();
                         luauSoupAvailable = false;
@@ -788,7 +838,7 @@ namespace Always_On_Server
                         jellyDanceAvailable = true;
 
                     }
-                    else if (currentTime >= 2410 && currentTime >= this.Config.timeOfDayToSleep)
+                    else if (currentTime >= 2410)
                     {
                         GoToBed();
                         jellyDanceAvailable = false;
@@ -800,6 +850,7 @@ namespace Always_On_Server
                 {
                     if (currentTime >= 900 && currentTime <= 1500)
                     {
+                       
 
 
                         Game1.player.team.SetLocalReady("festivalStart", true);
@@ -812,7 +863,7 @@ namespace Always_On_Server
                         grangeDisplayAvailable = true;
 
                     }
-                    else if (currentTime >= 1510 && currentTime >= this.Config.timeOfDayToSleep)
+                    else if (currentTime >= 1510)
                     {
                         GoToBed();
                         Game1.displayHUD = true;
@@ -843,7 +894,7 @@ namespace Always_On_Server
                         goldenPumpkinAvailable = true;
 
                     }
-                    else if (currentTime >= 2400 && currentTime >= this.Config.timeOfDayToSleep)
+                    else if (currentTime >= 2400)
                     {
                         GoToBed();
                         Game1.displayHUD = true;
@@ -868,7 +919,7 @@ namespace Always_On_Server
                         iceFishingAvailable = true;
 
                     }
-                    else if (currentTime >= 1410 && currentTime >= this.Config.timeOfDayToSleep)
+                    else if (currentTime >= 1410)
                     {
                         GoToBed();
                         iceFishingAvailable = false;
@@ -892,7 +943,7 @@ namespace Always_On_Server
                         winterFeastAvailable = true;
 
                     }
-                    else if (currentTime >= 1410 && currentTime >= this.Config.timeOfDayToSleep)
+                    else if (currentTime >= 1410)
                     {
                         GoToBed();
                         winterFeastAvailable = false;
@@ -929,3 +980,4 @@ namespace Always_On_Server
 
     }
 }
+
