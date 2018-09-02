@@ -95,15 +95,27 @@ namespace Always_On_Server
 
             helper.ConsoleCommands.Add("server", "Toggles headless server on/off", this.ServerToggle);
 
-
+            SaveEvents.AfterLoad += this.AfterLoad;
             SaveEvents.BeforeSave += this.Shipping_Menu; // Shipping Menu handler
             GameEvents.OneSecondTick += this.GameEvents_OneSecondTick; //game tick event handler
             TimeEvents.TimeOfDayChanged += this.TimeEvents_TimeOfDayChanged; // Time of day change handler
             ControlEvents.KeyPressed += this.ControlEvents_KeyPressed;
-
+            
 
 
         }
+
+
+        // turns on server after the game loads
+        private void AfterLoad(object sender, EventArgs e)
+        {
+            IsEnabled = true;
+            Game1.chatBox.addInfoMessage("The Host is in Server Mode!");
+        }
+
+
+
+
 
         // toggles server on/off with console command "server"
         private void ServerToggle(string command, string[] args)
@@ -453,9 +465,10 @@ namespace Always_On_Server
                     {
                         Game1.exitActiveMenu();
                         Game1.warpFarmer("Farmhouse", 9, 9, false);
-                        //Game1.timeOfDay = 2200; Maybe Causing Break?
+                        Game1.timeOfDay = 2200;
+                        Game1.shouldTimePass();
                     }), (ConfirmationDialog.behavior)null);
-                    this.Helper.Reflection.GetMethod(Game1.currentLocation, "startSleep").Invoke(); //hard sleep bc time seems to turn off?
+                    
                 }
             }
 
@@ -471,9 +484,10 @@ namespace Always_On_Server
                     {
                         Game1.exitActiveMenu();
                         Game1.warpFarmer("Farmhouse", 9, 9, false);
-                       // Game1.timeOfDay = 2200; //maybe causing break?
+                        Game1.timeOfDay = 2400;
+                        Game1.shouldTimePass();
                     }), (ConfirmationDialog.behavior)null);
-                    this.Helper.Reflection.GetMethod(Game1.currentLocation, "startSleep").Invoke(); //hard sleep bc time seems to turn off?
+                    
                 }
             }
 
@@ -515,10 +529,11 @@ namespace Always_On_Server
                     {
                         Game1.exitActiveMenu();
                         Game1.warpFarmer("Farmhouse", 9, 9, false);
-                       // Game1.timeOfDay = 2200; //maybe causing break?
+                        Game1.timeOfDay = 2200;
+                        Game1.shouldTimePass();
                     }), (ConfirmationDialog.behavior)null);
 
-                    this.Helper.Reflection.GetMethod(Game1.currentLocation, "startSleep").Invoke(); //hard sleep bc time seems to turn off?
+                    
                 }
             }
 
@@ -762,13 +777,14 @@ namespace Always_On_Server
                     }
                     else if (currentTime >= 1410)
                     {
-                        GoToBed();
+                        
                         eggHuntAvailable = false;
                         eggHuntCountDown = 0;
+                        GoToBed();
                     }
                 }
 
-                // flower dance turned off causes game crashes
+                // flower dance turned off causes game crashes with more than 4 players
                 /*void FlowerDance()
                 {
                     if (currentTime >= 900 && currentTime <= 1400)
@@ -810,9 +826,10 @@ namespace Always_On_Server
                     }
                     else if (currentTime >= 1410)
                     {
-                        GoToBed();
+                        
                         luauSoupAvailable = false;
                         luauSoupCountDown = 0;
+                        GoToBed();
                     }
                 }
 
@@ -840,9 +857,10 @@ namespace Always_On_Server
                     }
                     else if (currentTime >= 2410)
                     {
-                        GoToBed();
+                        
                         jellyDanceAvailable = false;
                         jellyDanceCountDown = 0;
+                        GoToBed();
                     }
                 }
 
@@ -865,10 +883,11 @@ namespace Always_On_Server
                     }
                     else if (currentTime >= 1510)
                     {
-                        GoToBed();
+                        
                         Game1.displayHUD = true;
                         grangeDisplayAvailable = false;
                         grangeDisplayCountDown = 0;
+                        GoToBed();
                     }
                 }
 
@@ -896,10 +915,11 @@ namespace Always_On_Server
                     }
                     else if (currentTime >= 2400)
                     {
-                        GoToBed();
+                       
                         Game1.displayHUD = true;
                         goldenPumpkinAvailable = false;
                         goldenPumpkinCountDown = 0;
+                        GoToBed();
                     }
                 }
 
@@ -921,9 +941,10 @@ namespace Always_On_Server
                     }
                     else if (currentTime >= 1410)
                     {
-                        GoToBed();
+                        
                         iceFishingAvailable = false;
                         iceFishingCountDown = 0;
+                        GoToBed();
                     }
                 }
 
@@ -945,9 +966,10 @@ namespace Always_On_Server
                     }
                     else if (currentTime >= 1410)
                     {
-                        GoToBed();
+                        
                         winterFeastAvailable = false;
                         winterFeastCountDown = 0;
+                        GoToBed();
                     }
                 }
 
@@ -980,4 +1002,5 @@ namespace Always_On_Server
 
     }
 }
+
 
